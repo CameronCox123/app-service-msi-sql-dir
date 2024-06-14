@@ -8,6 +8,7 @@ terraform {
   }
   required_version = ">= 0.14.9"
 }
+
 provider "azurerm" {
   features {}
 }
@@ -18,25 +19,19 @@ resource "random_integer" "ri" {
   max = 99999
 }
 
-resource "azurerm_app_service_plan" "appserviceplan" {
-  name                = "example-appserviceplan"
+resource "azurerm_service_plan" "example" {
+  name                = "webapp-asp-${random_integer.ri.result}"
   location            = "eastus"
   resource_group_name = "myResourceGroup-15330"
-
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
+  os_type             = "Windows"
+  sku_name            = "B1"
 }
 
-# Create the web app, pass in the App Service Plan ID
-resource "azurerm_linux_web_app" "webapp" {
-  name                  = "webapp-${random_integer.ri.result}"
-  location              = "eastus"
-  resource_group_name   = "myResourceGroup-15330"
-  service_plan_id       = azurerm_app_service_plan.appserviceplan.id
-  https_only            = true
-  site_config { 
-    minimum_tls_version = "1.2"
-  }
+resource "azurerm_windows_web_app" "example" {
+  name                = "webapp-${random_integer.ri.result}"
+  location            = "eastus"
+  resource_group_name = "myResourceGroup-15330"
+  service_plan_id     = azurerm_service_plan.example.id
+
+  site_config {}
 }
