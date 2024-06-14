@@ -1,14 +1,3 @@
-# Configure the Azure provider
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0.0"
-    }
-  }
-  required_version = ">= 0.14.9"
-}
-
 # Create the SQL Server
 resource "azurerm_sql_server" "sqlserver" {
   name                         = "mysqlserver-${random_integer.ri.result}"
