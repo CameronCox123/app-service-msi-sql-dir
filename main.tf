@@ -60,8 +60,6 @@ resource "azurerm_mssql_server" "server" {
 resource "azurerm_mssql_database" "db" {
   name                = "my-sql-db"
   server_id           = azurerm_mssql_server.server.id
-  resource_group_name = "myResourceGroup-15330"
-  location            = "eastus"
   sku_name            = "S0"
 }
 
@@ -77,5 +75,5 @@ data "azurerm_role_definition" "sql_contributor" {
 resource "azurerm_role_assignment" "sql_contributor_assignment" {
   scope                = azurerm_mssql_server.server.id
   role_definition_id   = data.azurerm_role_definition.sql_contributor.id
-  principal_id         = azurerm_linux_web_app.webapp.identity.principal_id
+  principal_id         = azurerm_linux_web_app.webapp.identity[0]
 }
