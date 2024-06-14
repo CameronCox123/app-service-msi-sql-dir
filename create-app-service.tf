@@ -1,6 +1,6 @@
 # Configure the Azure provider
 terraform {
-  required_providers {
+  required_providers {https://github.com/CameronCox123/app-service-msi-sql-dir/blob/main/main.tf
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.0.0"
