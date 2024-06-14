@@ -9,7 +9,7 @@ resource "azurerm_mssql_server" "sqlserver" {
 }
 
 # Create the SQL Database
-resource "azurerm_sql_database" "sqldatabase" {
+resource "azurerm_mssql_database" "sqldatabase" {
   name                = "mydatabase"
   resource_group_name = "myResourceGroup-68452"
   location            = "eastus"
@@ -17,7 +17,7 @@ resource "azurerm_sql_database" "sqldatabase" {
 }
 
 # Assign MSI of App Service as Azure AD Admin on SQL Server
-resource "azuread_administrator" "example" {
+resource "azurerm_sql_active_directory_administrator" "example" {
   server_name         = azurerm_mssql_server.sqlserver.name
   resource_group_name = "myResourceGroup-68452"
   login               = azurerm_linux_web_app.webapp.name
