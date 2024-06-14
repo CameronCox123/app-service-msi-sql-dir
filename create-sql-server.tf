@@ -1,19 +1,15 @@
-# Create the SQL Server
-resource "azurerm_mssql_server" "sqlserver" {
-  name                         = "mysqlserver-${random_integer.ri.result}"
+resource "azurerm_mssql_server" "server" {
+  name                         = "my-sql-server"
   resource_group_name          = "myResourceGroup-68452"
   location                     = "eastus"
+  administrator_login          = var.admin_username
+  administrator_login_password = local.admin_password
   version                      = "12.0"
-  administrator_login          = "campatcox@gmail.com"
-  administrator_login_password = "4PangoLinMM$"
 }
 
-# Create the SQL Database
-resource "azurerm_mssql_database" "sqldatabase" {
-  name                = "mydatabase"
-  resource_group_name = "myResourceGroup-68452"
-  location            = "eastus"
-  server_name         = azurerm_mssql_server.sqlserver.name
+resource "azurerm_mssql_database" "db" {
+  name      = "my-sql-db"
+  server_id = azurerm_mssql_server.server.id
 }
 
 # Assign MSI of App Service as Azure AD Admin on SQL Server
