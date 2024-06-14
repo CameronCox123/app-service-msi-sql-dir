@@ -19,17 +19,11 @@ resource "random_integer" "ri" {
   max = 99999
 }
 
-# Create the resource group
-resource "azurerm_resource_group" "rg" {
-  name     = "myResourceGroup-${random_integer.ri.result}"
-  location = "eastus"
-}
-
 # Create the Linux App Service Plan
 resource "azurerm_service_plan" "appserviceplan" {
   name                = "webapp-asp-${random_integer.ri.result}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = "eastus"
+  resource_group_name = "myResourceGroup-15330"
   os_type             = "Linux"
   sku_name            = "B1"
 }
@@ -37,8 +31,8 @@ resource "azurerm_service_plan" "appserviceplan" {
 # Create the web app, pass in the App Service Plan ID
 resource "azurerm_linux_web_app" "webapp" {
   name                  = "webapp-${random_integer.ri.result}"
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
+  location              = "eastus"
+  resource_group_name   = "myResourceGroup-15330"
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   https_only            = true
 
@@ -51,15 +45,10 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 }
 
-# Output the Principal ID of the MSI
-output "msi_principal_id" {
-  value = azurerm_linux_web_app.webapp.identity[0].principal_id
-}
-
 resource "azurerm_mssql_server" "server" {
   name                         = "cameron-cox-sql-server-for-terraform-deployment"
-  resource_group_name          = azurerm_resource_group.rg.name
-  location                     = azurerm_resource_group.rg.location
+  resource_group_name          = "eastus"
+  location                     = "myResourceGroup-15330"
   administrator_login          = "campatcox@gmail.com"
   administrator_login_password = "4PangoLinMM$"
   version                      = "12.0"
@@ -70,14 +59,12 @@ resource "azurerm_mssql_database" "db" {
   server_id           = azurerm_mssql_server.server.id
 }
 
-# Assign MSI of App Service as Azure AD Admin on SQL Server
-resource "azurerm_sql_active_directory_administrator" "example" {
-  server_name         = "my-sql-server"
-  resource_group_name = azurerm_resource_group.rg.name
-  login               = azurerm_linux_web_app.webapp.name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = azurerm_linux_web_app.webapp.identity[0].principal_id
+data "azurerm_role_definition" "contributor" {
+  name = "Contributor"
 }
 
-# Data source to get the current tenant ID
-data "azurerm_client_config" "current" {}
+resource "azurerm_role_assignment" "example" {
+  scope              = data.azurerm_subscription.current.id
+  role_definition_id = "${data.azurerm_subscription.current.id}${data.azurerm_role_definition.contributor.id}"
+  principal_id       = azurerm_virtual_machine.example.identity[0].principal_id
+}
