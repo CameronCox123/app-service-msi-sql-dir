@@ -2,8 +2,8 @@ resource "azurerm_mssql_server" "server" {
   name                         = "my-sql-server"
   resource_group_name          = "myResourceGroup-68452"
   location                     = "eastus"
-  administrator_login          = var.admin_username
-  administrator_login_password = local.admin_password
+  administrator_login          = "campatcox@gmail.com"
+  administrator_login_password = "4PangoLinMM$"
   version                      = "12.0"
 }
 
@@ -14,7 +14,7 @@ resource "azurerm_mssql_database" "db" {
 
 # Assign MSI of App Service as Azure AD Admin on SQL Server
 resource "azurerm_sql_active_directory_administrator" "example" {
-  server_name         = azurerm_mssql_server.sqlserver.name
+  server_name         = "my-sql-server"
   resource_group_name = "myResourceGroup-68452"
   login               = azurerm_linux_web_app.webapp.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
