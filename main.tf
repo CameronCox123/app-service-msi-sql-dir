@@ -75,5 +75,5 @@ data "azurerm_role_definition" "sql_contributor" {
 resource "azurerm_role_assignment" "sql_contributor_assignment" {
   scope                = azurerm_mssql_server.server.id
   role_definition_id   = data.azurerm_role_definition.sql_contributor.id
-  principal_id         = azurerm_linux_web_app.webapp.identity[0]
+  principal_id         = azurerm_linux_web_app.webapp.identity[0].principle_id
 }
