@@ -45,26 +45,37 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 }
 
+
+# Create the SQL Server
 resource "azurerm_mssql_server" "server" {
-  name                         = "cameron-cox-sql-server-for-terraform-deployment"
-  resource_group_name          = "eastus"
-  location                     = "myResourceGroup-15330"
-  administrator_login          = "campatcox@gmail.com"
-  administrator_login_password = "4PangoLinMM$"
+  name                         = "sqlserver-${random_integer.ri.result}"
+  resource_group_name          = "myResourceGroup-15330"
+  location                     = "eastus"
   version                      = "12.0"
+  administrator_login          = "sqladmin"
+  administrator_login_password = "4PangoLinMM$"
 }
 
+# Create the SQL Database
 resource "azurerm_mssql_database" "db" {
   name                = "my-sql-db"
   server_id           = azurerm_mssql_server.server.id
+  resource_group_name = "myResourceGroup-15330"
+  location            = "eastus"
+  sku_name            = "S0"
 }
 
-data "azurerm_role_definition" "contributor" {
-  name = "Contributor"
+# Get the current subscription
+data "azurerm_subscription" "current" {}
+
+# Get the built-in SQL Server Contributor role definition
+data "azurerm_role_definition" "sql_contributor" {
+  name = "SQL DB Contributor"
 }
 
-resource "azurerm_role_assignment" "example" {
-  scope              = data.azurerm_subscription.current.id
-  role_definition_id = "${data.azurerm_subscription.current.id}${data.azurerm_role_definition.contributor.id}"
-  principal_id       = azurerm_virtual_machine.example.identity[0].principal_id
+# Assign the SQL Server Contributor role to the Web App's MSI
+resource "azurerm_role_assignment" "sql_contributor_assignment" {
+  scope                = azurerm_mssql_server.server.id
+  role_definition_id   = data.azurerm_role_definition.sql_contributor.id
+  principal_id         = azurerm_linux_web_app.webapp.identity.principal_id
 }
