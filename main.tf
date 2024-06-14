@@ -77,7 +77,6 @@ resource "azurerm_mssql_server" "server" {
 resource "azurerm_mssql_database" "db" {
   name                = "my-sql-db"
   resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
   server_id           = azurerm_mssql_server.server.id
 }
 
