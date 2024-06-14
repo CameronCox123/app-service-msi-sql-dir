@@ -13,13 +13,13 @@ resource "azurerm_sql_database" "sqldatabase" {
   name                = "mydatabase"
   resource_group_name = "myResourceGroup-68452"
   location            = "eastus"
-  server_name         = azurerm_sql_server.sqlserver.name
+  server_name         = azurerm_mssql_server.sqlserver.name
   sku_name            = "S0"
 }
 
 # Assign MSI of App Service as Azure AD Admin on SQL Server
-resource "azurerm_sql_active_directory_administrator" "example" {
-  server_name         = azurerm_sql_server.sqlserver.name
+resource "azurerm_mssql_active_directory_administrator" "example" {
+  server_name         = azurerm_mssql_server.sqlserver.name
   resource_group_name = "myResourceGroup-68452"
   login               = azurerm_linux_web_app.webapp.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
