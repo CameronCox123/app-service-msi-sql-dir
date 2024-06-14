@@ -1,5 +1,5 @@
 # Create the SQL Server
-resource "azurerm_sql_server" "sqlserver" {
+resource "azurerm_mssql_server" "sqlserver" {
   name                         = "mysqlserver-${random_integer.ri.result}"
   resource_group_name          = "myResourceGroup-68452"
   location                     = "eastus"
@@ -11,8 +11,8 @@ resource "azurerm_sql_server" "sqlserver" {
 # Create the SQL Database
 resource "azurerm_sql_database" "sqldatabase" {
   name                = "mydatabase"
-  resource_group_name = azurerm_resource_group.sql_rg.name
-  location            = azurerm_resource_group.sql_rg.location
+  resource_group_name = "myResourceGroup-68452"
+  location            = "eastus"
   server_name         = azurerm_sql_server.sqlserver.name
   sku_name            = "S0"
 }
@@ -20,7 +20,7 @@ resource "azurerm_sql_database" "sqldatabase" {
 # Assign MSI of App Service as Azure AD Admin on SQL Server
 resource "azurerm_sql_active_directory_administrator" "example" {
   server_name         = azurerm_sql_server.sqlserver.name
-  resource_group_name = myResourceGroup-68452
+  resource_group_name = "myResourceGroup-68452"
   login               = azurerm_linux_web_app.webapp.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   object_id           = azurerm_linux_web_app.webapp.identity[0].principal_id
