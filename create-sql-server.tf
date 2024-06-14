@@ -1,8 +1,8 @@
 # Create the SQL Server
 resource "azurerm_sql_server" "sqlserver" {
   name                         = "mysqlserver-${random_integer.ri.result}"
-  resource_group_name          = myResourceGroup-68452
-  location                     = eastus
+  resource_group_name          = "myResourceGroup-68452"
+  location                     = "eastus"
   version                      = "12.0"
   administrator_login          = "campatcox@gmail.com"
   administrator_login_password = "4PangoLinMM$"
