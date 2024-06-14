@@ -9,11 +9,6 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-provider "azurerm" {
-  features {}
-}
-
-
 # Create the SQL Server
 resource "azurerm_sql_server" "sqlserver" {
   name                         = "mysqlserver-${random_integer.ri.result}"
